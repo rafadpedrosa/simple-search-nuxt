@@ -1,6 +1,7 @@
 <template>
   <div>
-    <h1 class="text-center">
+    <h1 class="text-center mt-5">
+      <NuxtLogo />
       Welcome to My Nuxt Search!
     </h1>
     <hr>
@@ -16,8 +17,12 @@
 </template>
 
 <script>
+import NuxtLogo from '@/components/NuxtLogo'
 export default {
-  name: 'Index'
+  name: 'Index',
+  components: {
+    NuxtLogo
+  }
 }
 </script>
 
