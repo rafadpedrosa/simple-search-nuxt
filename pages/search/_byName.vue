@@ -4,7 +4,7 @@
       Return
     </NuxtLink>
     <hr>
-    <SearchInput @input="setHighlightText" />
+    <SearchInput :input-value="$route.params.byName" :immediate-focus="true" @search="search" @input="setHighlightText" />
 
     <div v-if="!$fetchState.pending && usersPaginated.length">
       <div class="d-flex justify-content-center">
@@ -18,9 +18,21 @@
         />
       </div>
 
-      <PersonCard v-for="(user, i) in usersPaginated" :key="i" class="mt-3" :user="user" :highlight="highlightText" />
+      <div v-if="!loading">
+        <PersonCard
+          v-for="(user, i) in usersPaginated"
+          :key="`${i}-${highlightText}`"
+          class="mt-3"
+          :user="user"
+          :highlight="highlightText"
+        />
+      </div>
+      <p v-else class="d-flex justify-content-center mt-3">
+        <b-spinner />
+      </p>
 
       <p class="d-flex justify-content-center">
+        <!-- TODO duplicated code-->
         <b-pagination
           v-model="paginationPage"
           :total-rows="usersSize"
@@ -31,10 +43,16 @@
         />
       </p>
     </div>
-    <div v-else>
+
+    <div v-else-if="$fetchState.pending">
       <p class="d-flex justify-content-center mt-5">
         <b-spinner />
       </p>
+    </div>
+    <div v-else>
+      <h2 class="justify-content-center d-flex mt-5">
+        Nothing Found
+      </h2>
     </div>
   </div>
 </template>
@@ -55,19 +73,29 @@ export default {
   },
   data () {
     return {
+      loading: true,
       paginationPage: 1,
       highlightText: '',
       usersData: null
     }
   },
   methods: {
-    updatePagination: debounce(function (paginationPage) {
-      const old = this.highlightText
+    search (value) {
+      this.$router.push({ params: { byName: value } })
+    },
+    resolveLoading: debounce(function (paginationPage) {
+      const oldHighlightText = this.highlightText
+
       this.highlightText = ''
       this.$store.commit(CLEAR_PAGINATED_USERS)
       this.$store.dispatch(UPDATE_PAGINATION, paginationPage)
-      this.highlightText = old
-    }, 1000),
+      this.loading = false
+      this.highlightText = oldHighlightText
+    }, 200),
+    updatePagination (paginationPage) {
+      this.loading = true
+      this.resolveLoading(paginationPage)
+    },
     setHighlightText (inputText) {
       this.highlightText = inputText
     }
@@ -82,10 +110,9 @@ export default {
   fetchOnServer: false,
   async fetch () {
     if (this.usersPaginated.length === 0) {
-      console.log(':::$route.params.byName', this.$route.params.byName)
-      console.log(':::usersSize', this.usersSize)
       const response = await personsService.getUsers()
       const users = response.data
+      this.loading = false
 
       this.$store.commit(SET_FILTER, this.$route.params.byName)
       this.$store.commit(SET_USERS, users)
@@ -97,12 +124,3 @@ export default {
   }
 }
 </script>
-
-<style type="text/css" lang="scss" scoped>
-.person-card {
-
-}
-
-.exercise-wrapper {
-}
-</style>

@@ -2,13 +2,16 @@ import Vue from 'vue'
 
 const update = (el, { value }) => {
   // eslint-disable-next-line prefer-regex-literals
-  const regExpCleaner = new RegExp('(<span style="background:yellow">|</span>)', 'g')
+  const regExpCleaner = new RegExp('(<span style="background:yellow">|</span>)', 'ig')
+  const regExpReplace = new RegExp(`${value.highlight}`, 'ig')
+  const slicedText = (el.innerHTML.match(regExpReplace) || [''])[0]
 
-  el.innerHTML = el.innerHTML.replaceAll(regExpCleaner, '')
-  el.innerHTML = el.innerHTML.replaceAll(value.highlight, `<span style="background:yellow">${value.highlight}</span>`)
+  if (slicedText) {
+    el.innerHTML = el.innerHTML.replaceAll(regExpCleaner, '')
+    el.innerHTML = el.innerHTML.replaceAll(regExpReplace, `<span style="background:yellow">${slicedText}</span>`)
+  }
 }
 
 Vue.directive('highlight', {
-  inserted: update,
-  componentUpdated: update
+  inserted: update
 })

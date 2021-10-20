@@ -50,7 +50,12 @@ export const mutations = {
   },
   [SET_USERS]: (state, users) => {
     state.users = users
-    state.usersFiltered = users.filter(user => user.name.includes(state.byName))
+    state.usersFiltered = users.filter((user) => {
+      const nameToUpperCase = user.name.toUpperCase()
+      const byNameToUpperCase = (state.byName || '').toUpperCase()
+
+      return nameToUpperCase.includes(byNameToUpperCase)
+    })
   }
 }
 
