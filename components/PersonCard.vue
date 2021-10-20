@@ -1,8 +1,8 @@
 <template>
   <b-card
     :img-src="avatar"
-    img-height="200"
-    img-width="200"
+    img-height="180"
+    img-width="180"
     img-alt="Card image"
     img-left
     class="user-card mb-3"
@@ -98,7 +98,7 @@ export default {
 .user-card:hover {
   border: #eee 1px solid;
   background-color: #eee;
-  cursor:pointer;
+  cursor: pointer;
 }
 
 .user-card {
