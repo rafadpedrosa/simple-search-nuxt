@@ -1,0 +1,1 @@
+export const SET_USERS = 'INDEX_SET_USERS'
