@@ -110,6 +110,7 @@ export default {
   fetchOnServer: false,
   async fetch () {
     if (this.usersPaginated.length === 0) {
+      this.$store.dispatch(UPDATE_PAGINATION, 1)
       const response = await personsService.getUsers()
       const users = response.data
       this.loading = false
