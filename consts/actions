@@ -1,1 +1,1 @@
-export const FETCH_USERS = 'index_fetchUsers'
+export const UPDATE_PAGINATION = 'index_action_update_pagination'

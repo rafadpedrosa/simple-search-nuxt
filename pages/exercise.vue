@@ -4,14 +4,37 @@
 
     <SearchInput @input="setHighlightText" />
 
-    <PersonCard v-for="(user, i) in users" :key="i" class="mt-3" :user="user" :highlight="highlightText" />
+    <p class="d-flex justify-content-center">
+      <b-pagination
+        v-model="currentPage"
+        class="mt-4"
+        :total-rows="usersSize"
+        :per-page="perPage"
+        aria-controls="my-table"
+        @change="updatePagination"
+      />
+    </p>
+
+    <PersonCard v-for="(user, i) in usersPaginated" :key="i" class="mt-3" :user="user" :highlight="highlightText" />
+
+    <p class="d-flex justify-content-center">
+      <b-pagination
+        v-model="currentPage"
+        :total-rows="usersSize"
+        class="mt-4"
+        :per-page="perPage"
+        aria-controls="my-table"
+        @change="updatePagination"
+      />
+    </p>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 import SearchInput from '@/components/SearchInput'
 import PersonCard from '@/components/PersonCard'
+import { UPDATE_PAGINATION } from '@/consts/actions'
 
 export default {
   components: {
@@ -20,7 +43,8 @@ export default {
   },
   data () {
     return {
-      highlightText: 'a',
+      currentPage: 1,
+      highlightText: '',
       usersData: null
     }
   },
@@ -30,18 +54,19 @@ export default {
     }
   },
   methods: {
+    updatePagination (currentPage) {
+      this.$store.dispatch(UPDATE_PAGINATION, currentPage)
+    },
     setHighlightText (inputText) {
       this.highlightText = inputText
     }
   },
   computed: {
-    ...mapState(['users']),
+    ...mapState(['usersPaginated']),
+    ...mapGetters(['usersSize', 'perPage']),
     persons () {
       return this.userData || this.users
     }
-  },
-  mounted () {
-    // getUsers
   }
 }
 </script>
